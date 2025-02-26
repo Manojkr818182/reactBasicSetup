@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Avatar, Button, Card, CardContent, Grid,
-  Typography, TextField
+  Avatar,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Box,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
@@ -9,34 +14,44 @@ const Profile = () => {
   const { userDetail } = useSelector((state) => state.auth);
   const [editing, setEditing] = useState(false);
   const [user, setUser] = useState({
-    name: "",
+    name: "MNJ",
     bio: "",
     email: "",
   });
 
   useEffect(() => {
     if (userDetail) {
-      console.log(userDetail)
       setUser({
-        name: userDetail.name || " MNJ",
+        name: userDetail.name || "",
         bio: userDetail.bio || "",
         email: userDetail.email || "",
       });
     }
-  }, [userDetail]); // Runs whenever userDetail changes
+  }, [userDetail]);
 
-  const handleEditToggle = () => setEditing(!editing);
+  const handleEditToggle = () => setEditing((prev) => !prev);
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const cancelFun = () => {
+    setEditing(false);
+    if (userDetail) {
+      setUser({
+        name: userDetail.name || "",
+        bio: userDetail.bio || "",
+        email: userDetail.email || "",
+      });
+    }
   };
 
   return (
-    <Grid container justifyContent="center" sx={{ mt: 5 }}>
+    <Box display="flex" justifyContent="center" mt={5}>
       <Card sx={{ width: 420, p: 3, textAlign: "center", boxShadow: 3 }}>
         <Avatar
           sx={{ width: 100, height: 100, margin: "auto" }}
-          src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+          src={user?.avatar || "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"}
           alt="User Avatar"
         />
         <CardContent>
@@ -66,24 +81,34 @@ const Profile = () => {
                 onChange={handleChange}
                 sx={{ mb: 2 }}
               />
+              <Box display="flex" justifyContent="end" mt={2} sx={{ gap: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setEditing(false)}
+                >
+                  Save
+                </Button>
+                <Button variant="contained" color="secondary" onClick={cancelFun}>
+                  Cancel
+                </Button>
+              </Box>
             </>
           ) : (
             <>
               <Typography variant="h5">{user.name}</Typography>
               <Typography color="textSecondary">{user.bio}</Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>{user.email}</Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {user.email}
+              </Typography>
+              <Button variant="contained" sx={{ mt: 2 }} onClick={handleEditToggle}>
+                Edit Profile
+              </Button>
             </>
           )}
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleEditToggle}
-          >
-            {editing ? "Save" : "Edit Profile"}
-          </Button>
         </CardContent>
       </Card>
-    </Grid>
+    </Box>
   );
 };
 
